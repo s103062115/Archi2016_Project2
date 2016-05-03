@@ -115,7 +115,13 @@ int Add(int rs,int rt,int rd){
     }
     wbrs = RS + RT;
     wbad = rd;
-    if(sign(RS) == sign(RT) && sign(wbrs) != sign(RS)){
+    if((int)RS > 0 && (int)wbrs < (int)RT){
+        return -1;
+    }else if((int)RT > 0 && (int)wbrs < (int)RS){
+        return -1;
+    }else if((int)RS < 0 && (int)wbrs > (int)RT){
+        return -1;
+    }else if((int)RT < 0 && (int)wbrs > (int)RS){
         return -1;
     }
     return 1;
@@ -138,7 +144,7 @@ int Sub(int rs,int rt,int rd){
     }
     wbad = rd;
     wbrs = RS - RT;
-    if((sign(wbrs)>0 && RS < RT) || (sign(wbrs<0 && RS > RT))){
+    if(((int)wbrs > 0 && (int)RS < (int)RT) || ((int)wbrs < 0 && (int)RS > (int)RT)){
         return -1;
     }
     return 1;
@@ -321,14 +327,20 @@ void Sra(int rt,int rd,int C){
     wbrs = A1 >> C;
 }
 int Addi(int rs,int rt,int C){
-    unsigned int RS;
+    int RS;
     if(for_ex == 1)RS = wbrsd;
     else if(for_id == 1)RS = wbrs;
     else RS = registers[rs];
     unsigned int A1 = S(C);
     wbad = rt;
     wbrs = RS + A1;
-    if((C>=0x8000) == sign(RS) && sign(wbrs) != sign(RS)){
+    if((int)RS > 0 && (int)wbrs < (int)A1){
+        return -1;
+    }else if((int)A1 > 0 && (int)wbrs < (int)RS){
+        return -1;
+    }else if((int)RS < 0 && (int)wbrs > (int)A1){
+        return -1;
+    }else if((int)A1 < 0 && (int)wbrs > (int)RS){
         return -1;
     }
     return 1;
@@ -376,7 +388,6 @@ void Ori(int rs,int rt,int C){
     int i;
     wbad = rt;
     wbrs = 0;
-    printf("%08X",A1);
     for(i = 0;i < 32;i++){
         wbrs = wbrs + ((A1%2)||(A2%2))*(int)(Pow(2,i)+0.01);
         A1 = A1/2;
@@ -421,16 +432,7 @@ void Lw(int rs,int rt,int C){
     int A1 = S(C);
     wbad = rt;
     asad = (int)RS + A1;
-    /*if(((int)RS + A1)%4!=0){
-        error_dm = 1;
-    }
-    if((int)RS + A1 > 1023 || (int)RS + A1 < 0){
-        error_ao = 1;
-    }
 
-    if(error() == 0){
-        wbrs = Dm[((int)RS + C)/4];
-    }*/
 }
 void Lhu(int rs,int rt,int C){
     int RS;
